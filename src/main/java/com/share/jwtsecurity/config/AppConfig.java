@@ -36,9 +36,12 @@ public class AppConfig {
         if (mongoOperations.collectionExists(ApplicationUser.class)) {
             mongoOperations.dropCollection(ApplicationUser.class);
         }
+        if (mongoOperations.collectionExists(UserRole.class)) {
+            mongoOperations.dropCollection(UserRole.class);
+        }
         ApplicationUser user = new ApplicationUser();
-        user.setUsername("lino");
-        user.setPassword(bCryptPasswordEncoder().encode("lino"));
+        user.setUsername("admin");
+        user.setPassword(bCryptPasswordEncoder().encode("admin"));
 
         UserRole role = new UserRole();
         role.setName("ADMIN");

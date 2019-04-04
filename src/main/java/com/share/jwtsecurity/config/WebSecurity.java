@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.share.jwtsecurity.filter.JWTAuthenticationFilter;
 import com.share.jwtsecurity.filter.JWTAuthorizationFilter;
 import com.share.jwtsecurity.service.UserDetailsServiceImpl;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -12,9 +11,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import static com.share.jwtsecurity.constant.SecurityConstants.SIGN_UP_URL;
 
@@ -43,9 +39,10 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         UsernamePasswordAuthenticationFilter filter = new JWTAuthenticationFilter(authenticationManager(),
                 objectMapper);
 
-        http.csrf().disable().authorizeRequests()
+        http.cors().and().csrf().disable().authorizeRequests()
 
                 .antMatchers(HttpMethod.POST, SIGN_UP_URL).permitAll()
+                .antMatchers(HttpMethod.GET).permitAll()
 
                 .anyRequest().authenticated()
 
@@ -54,16 +51,8 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
                 .addFilter(new JWTAuthenticationFilter(authenticationManager(), objectMapper))
 
                 .addFilter(new JWTAuthorizationFilter(authenticationManager()));
-        ;
-        System.out.println(http);
 
-    }
 
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", new CorsConfiguration().applyPermitDefaultValues());
-        return source;
     }
 
 }

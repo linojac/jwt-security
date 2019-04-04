@@ -1,8 +1,9 @@
 package com.share.jwtsecurity;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-//@SpringBootApplication
+@SpringBootApplication
 public class JwtSecurityApplication {
 
 

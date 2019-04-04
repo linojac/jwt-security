@@ -2,6 +2,7 @@ package com.share.jwtsecurity.model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.validator.constraints.UniqueElements;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -14,7 +15,9 @@ public class UserRole {
     @Id
     String id;
 
+    @UniqueElements
     String name;
 
+    @UniqueElements
     List<String> rolePrivileges;
 }

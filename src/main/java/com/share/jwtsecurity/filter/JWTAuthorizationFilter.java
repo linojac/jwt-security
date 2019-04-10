@@ -1,7 +1,8 @@
 package com.share.jwtsecurity.filter;
 
-import com.share.jwtsecurity.constant.SecurityConstants;
+import com.share.jwtsecurity.config.SecurityConfig;
 import io.jsonwebtoken.Jwts;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -14,23 +15,26 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import static com.share.jwtsecurity.constant.SecurityConstants.SECRET;
-import static com.share.jwtsecurity.constant.SecurityConstants.TOKEN_PREFIX;
-
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
+    SecurityConfig config;
 
-    public JWTAuthorizationFilter(AuthenticationManager authenticationManager) {
+    public JWTAuthorizationFilter(AuthenticationManager authenticationManager, SecurityConfig config) {
         super(authenticationManager);
+        this.config = config;
     }
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        String header = request.getHeader(SecurityConstants.HEADER_STRING);
+        if (request.getMethod().equals(HttpMethod.GET.toString())) {
+            chain.doFilter(request, response);
+            return;
+        }
+        String header = request.getHeader(config.getJwtHeader());
 
-        if (null == header || !header.startsWith(TOKEN_PREFIX)) {
+        if (null == header || !header.startsWith(config.getJwtTokenPrefix())) {
             chain.doFilter(request, response);
             return;
         }
@@ -42,13 +46,13 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     }
 
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
-        String token = request.getHeader(SecurityConstants.HEADER_STRING);
+        String token = request.getHeader(config.getJwtHeader());
         if (token != null) {
             String user = Jwts.parser()
 
-                    .setSigningKey(SECRET)
+                    .setSigningKey(config.getJwtSecretKey())
 
-                    .parseClaimsJws(token.replace(TOKEN_PREFIX, ""))
+                    .parseClaimsJws(token.replace(config.getJwtTokenPrefix(), ""))
 
                     .getBody()
 

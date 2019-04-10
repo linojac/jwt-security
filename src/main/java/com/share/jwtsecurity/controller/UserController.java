@@ -3,12 +3,10 @@ package com.share.jwtsecurity.controller;
 import com.share.jwtsecurity.model.ApplicationUser;
 import com.share.jwtsecurity.repository.ApplicationUserRepository;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Arrays;
+import java.util.HashSet;
 
 @RestController
 @RequestMapping("/users")
@@ -32,10 +30,17 @@ public class UserController {
 
     public void signUp(@RequestBody ApplicationUser user) {
 
+        user.setUsername(user.getUsername());
         user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-        user.setUserRoles(Arrays.asList("CUSTOMER"));
+        user.setUserRoles(new HashSet<>());
+        user.getUserRoles().addAll(Arrays.asList("CUSTOMER"));
 
         applicationUserRepository.save(user);
 
+    }
+
+    @GetMapping("hello")
+    public String hello() {
+        return "hello";
     }
 }

@@ -4,8 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.share.jwtsecurity.config.SecurityConfig;
 import com.share.jwtsecurity.constant.SecurityConstants;
 import com.share.jwtsecurity.model.ApplicationUser;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import com.share.jwtsecurity.service.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,13 +27,15 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 
     AuthenticationManager authenticationManager;
     ObjectMapper objectMapper;
+    private JwtService jwtService;
 
     public JWTAuthenticationFilter(AuthenticationManager authenticationManager, ObjectMapper objectMapper,
-                                   SecurityConfig config) {
+                                   SecurityConfig config, JwtService jwtService) {
         super();
         this.authenticationManager = authenticationManager;
         this.objectMapper = objectMapper;
         this.config = config;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -62,16 +63,16 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
                                             HttpServletResponse res,
                                             FilterChain chain,
                                             Authentication auth) throws IOException, ServletException {
-        Date expirationDate = new Date(System.currentTimeMillis() + config.getJwtExpirationTime());
-        String token = Jwts.builder()
 
-                .setSubject(((User) auth.getPrincipal()).getUsername())
+        Date expirationDate = null;
+        if ("true".equalsIgnoreCase(req.getParameter("rememberme"))) {
+            expirationDate = new Date(System.currentTimeMillis() + config.getJwtExpirationTime());
+        } else {
+            expirationDate = new Date(System.currentTimeMillis() + config.getSessionTime());
+        }
 
-                .setExpiration(expirationDate)
-
-                .signWith(SignatureAlgorithm.HS512, config.getJwtSecretKey())
-
-                .compact();
+        String username = ((User) auth.getPrincipal()).getUsername();
+        String token = jwtService.createToken(username, expirationDate);
         res.setHeader(SecurityConstants.AUTHORIZATION_HEADER, SecurityConstants.TOKEN_PREFIX + token);
         res.setHeader(SecurityConstants.EXPIRATION_TIME_MILLIS, String.valueOf(expirationDate.getTime()));
     }

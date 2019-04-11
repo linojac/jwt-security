@@ -1,7 +1,8 @@
 package com.share.jwtsecurity.filter;
 
 import com.share.jwtsecurity.config.SecurityConfig;
-import io.jsonwebtoken.Jwts;
+import com.share.jwtsecurity.service.JwtService;
+import io.jsonwebtoken.Claims;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -14,14 +15,17 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
     SecurityConfig config;
+    private JwtService jwtService;
 
-    public JWTAuthorizationFilter(AuthenticationManager authenticationManager, SecurityConfig config) {
+    public JWTAuthorizationFilter(AuthenticationManager authenticationManager, SecurityConfig config, JwtService jwtService) {
         super(authenticationManager);
         this.config = config;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -32,9 +36,9 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
             chain.doFilter(request, response);
             return;
         }
-        String header = request.getHeader(config.getJwtHeader());
+        String authorizationHeader = request.getHeader(config.getJwtHeader());
 
-        if (null == header || !header.startsWith(config.getJwtTokenPrefix())) {
+        if (null == authorizationHeader || !authorizationHeader.startsWith(config.getJwtTokenPrefix())) {
             chain.doFilter(request, response);
             return;
         }
@@ -48,16 +52,14 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
         String token = request.getHeader(config.getJwtHeader());
         if (token != null) {
-            String user = Jwts.parser()
+            Claims claims = jwtService.getClaims(token);
 
-                    .setSigningKey(config.getJwtSecretKey())
+            String user = claims.getSubject();
 
-                    .parseClaimsJws(token.replace(config.getJwtTokenPrefix(), ""))
+            Date date = claims.getExpiration();
+            long now = System.currentTimeMillis();
 
-                    .getBody()
-
-                    .getSubject();
-            if (user != null) {
+            if (user != null && date != null && (date.getTime() - now) > 0) {
                 return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
             }
             return null;

@@ -3,6 +3,7 @@ package com.share.jwtsecurity.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.share.jwtsecurity.filter.JWTAuthenticationFilter;
 import com.share.jwtsecurity.filter.JWTAuthorizationFilter;
+import com.share.jwtsecurity.service.JwtService;
 import com.share.jwtsecurity.service.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,13 +26,15 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
     private UserDetailsServiceImpl userDetailsService;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private ObjectMapper objectMapper;
+    private JwtService jwtService;
 
     public WebSecurity(UserDetailsServiceImpl userDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder,
-                       ObjectMapper objectMapper, SecurityConfig config) {
+                       ObjectMapper objectMapper, SecurityConfig config, JwtService jwtService) {
         this.userDetailsService = userDetailsService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.objectMapper = objectMapper;
         this.config = config;
+        this.jwtService = jwtService;
     }
 
     @Override
@@ -51,9 +54,9 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
                 .and()
 
-                .addFilter(new JWTAuthenticationFilter(authenticationManager(), objectMapper, config))
+                .addFilter(new JWTAuthenticationFilter(authenticationManager(), objectMapper, config, jwtService))
 
-                .addFilter(new JWTAuthorizationFilter(authenticationManager(), config));
+                .addFilter(new JWTAuthorizationFilter(authenticationManager(), config, jwtService));
 
 
     }
@@ -65,7 +68,7 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
         config.setAllowCredentials(true);
         config.addAllowedOrigin("*");
         config.addExposedHeader("Authorization, x-xsrf-token, Access-Control-Allow-Headers, Origin, Accept, X-Requested-With, " +
-                "Content-Type, Access-Control-Request-Method, Custom-Filter-Header");
+                "Content-Type, Access-Control-Request-Method, Custom-Filter-Header, rememberme");
         config.addAllowedHeader("*");
         config.addAllowedMethod("OPTIONS");
         config.addAllowedMethod("GET");

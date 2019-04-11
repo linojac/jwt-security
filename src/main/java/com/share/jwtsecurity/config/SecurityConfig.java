@@ -12,6 +12,9 @@ public class SecurityConfig {
     @Value("${jwt.expiration.time:864000000}")//10 days
     private long jwtExpirationTime;
 
+    @Value("${session.time:1800000}")
+    private long sessionTime;
+
     @Value("${jwt.token.prefix:Bearer }")
     private String jwtTokenPrefix;
 
@@ -59,5 +62,13 @@ public class SecurityConfig {
 
     public void setSignUpUrl(String signUpUrl) {
         this.signUpUrl = signUpUrl;
+    }
+
+    public long getSessionTime() {
+        return sessionTime;
+    }
+
+    public void setSessionTime(long sessionTime) {
+        this.sessionTime = sessionTime;
     }
 }

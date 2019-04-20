@@ -18,7 +18,7 @@ public class SecurityConfig {
     @Value("${jwt.token.prefix:Bearer }")
     private String jwtTokenPrefix;
 
-    @Value("${jwt.header:Authorization}")
+    @Value("${jwt.header:authorization}")
     private String jwtHeader;
 
     @Value(("${sign.up.url:/users/sign-up}"))

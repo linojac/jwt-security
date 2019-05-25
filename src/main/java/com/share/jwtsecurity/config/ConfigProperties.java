@@ -4,16 +4,16 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
-public class SecurityConfig {
+public class ConfigProperties {
 
     @Value("${jwt.secret.key:SecretKeyToGenJwtTokens}")
-    private String jwtSecretKey;
+    private transient String jwtSecretKey;
 
     @Value("${jwt.expiration.time:864000000}")//10 days
     private long jwtExpirationTime;
 
     @Value("${session.time:1800000}")
-    private long sessionTime;
+    private long sessionExpirationTime;
 
     @Value("${jwt.token.prefix:Bearer }")
     private String jwtTokenPrefix;
@@ -64,11 +64,11 @@ public class SecurityConfig {
         this.signUpUrl = signUpUrl;
     }
 
-    public long getSessionTime() {
-        return sessionTime;
+    public long getSessionExpirationTime() {
+        return sessionExpirationTime;
     }
 
-    public void setSessionTime(long sessionTime) {
-        this.sessionTime = sessionTime;
+    public void setSessionExpirationTime(long sessionExpirationTime) {
+        this.sessionExpirationTime = sessionExpirationTime;
     }
 }

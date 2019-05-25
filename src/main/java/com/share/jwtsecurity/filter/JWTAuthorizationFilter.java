@@ -1,9 +1,10 @@
 package com.share.jwtsecurity.filter;
 
-import com.share.jwtsecurity.config.SecurityConfig;
+import com.share.jwtsecurity.config.ConfigProperties;
 import com.share.jwtsecurity.service.JwtService;
 import io.jsonwebtoken.Claims;
-import org.springframework.http.HttpMethod;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -19,12 +20,13 @@ import java.util.Date;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
-    SecurityConfig config;
+    private static final Logger LOGGER = LoggerFactory.getLogger(JWTAuthorizationFilter.class);
+    ConfigProperties configProperties;
     private JwtService jwtService;
 
-    public JWTAuthorizationFilter(AuthenticationManager authenticationManager, SecurityConfig config, JwtService jwtService) {
+    public JWTAuthorizationFilter(AuthenticationManager authenticationManager, ConfigProperties configProperties, JwtService jwtService) {
         super(authenticationManager);
-        this.config = config;
+        this.configProperties = configProperties;
         this.jwtService = jwtService;
     }
 
@@ -32,25 +34,19 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        if (request.getMethod().equals(HttpMethod.GET.toString())) {
-            chain.doFilter(request, response);
-            return;
-        }
-        String authorizationHeader = request.getHeader(config.getJwtHeader());
 
-        if (null == authorizationHeader || !authorizationHeader.startsWith(config.getJwtTokenPrefix())) {
-            chain.doFilter(request, response);
-            return;
-        }
+        LOGGER.info("Inside authorization filter");
+
 
         UsernamePasswordAuthenticationToken token = getAuthentication(request);
 
         SecurityContextHolder.getContext().setAuthentication(token);
         chain.doFilter(request, response);
+
     }
 
     private UsernamePasswordAuthenticationToken getAuthentication(HttpServletRequest request) {
-        String token = request.getHeader(config.getJwtHeader());
+        String token = request.getHeader(configProperties.getJwtHeader());
         if (token != null) {
             Claims claims = jwtService.getClaims(token);
 

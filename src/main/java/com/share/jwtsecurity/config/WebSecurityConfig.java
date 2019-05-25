@@ -3,6 +3,7 @@ package com.share.jwtsecurity.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.share.jwtsecurity.filter.JWTAuthenticationFilter;
 import com.share.jwtsecurity.filter.JWTAuthorizationFilter;
+import com.share.jwtsecurity.service.EncoderService;
 import com.share.jwtsecurity.service.JwtService;
 import com.share.jwtsecurity.service.UserDetailsServiceImpl;
 import org.springframework.context.annotation.Bean;
@@ -19,22 +20,25 @@ import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
-public class WebSecurity extends WebSecurityConfigurerAdapter {
+public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    SecurityConfig config;
+    ConfigProperties configProperties;
 
     private UserDetailsServiceImpl userDetailsService;
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     private ObjectMapper objectMapper;
     private JwtService jwtService;
+    private EncoderService encoderService;
 
-    public WebSecurity(UserDetailsServiceImpl userDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder,
-                       ObjectMapper objectMapper, SecurityConfig config, JwtService jwtService) {
+    public WebSecurityConfig(UserDetailsServiceImpl userDetailsService, BCryptPasswordEncoder bCryptPasswordEncoder,
+                             ObjectMapper objectMapper, ConfigProperties configProperties, JwtService jwtService,
+                             EncoderService encoderService) {
         this.userDetailsService = userDetailsService;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.objectMapper = objectMapper;
-        this.config = config;
+        this.configProperties = configProperties;
         this.jwtService = jwtService;
+        this.encoderService = encoderService;
     }
 
     @Override
@@ -47,16 +51,13 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 
         http.cors().and().csrf().disable().authorizeRequests()
 
-                .antMatchers(HttpMethod.POST, config.getSignUpUrl()).permitAll()
-                .antMatchers(HttpMethod.GET).permitAll()
-
+                .antMatchers(HttpMethod.POST, configProperties.getSignUpUrl()).permitAll()
+//                .antMatchers(HttpMethod.GET).permitAll()
                 .anyRequest().authenticated()
-
                 .and()
-
-                .addFilter(new JWTAuthenticationFilter(authenticationManager(), objectMapper, config, jwtService))
-
-                .addFilter(new JWTAuthorizationFilter(authenticationManager(), config, jwtService));
+                .addFilter(new JWTAuthenticationFilter(authenticationManager(),
+                        objectMapper, configProperties, jwtService, encoderService))
+                .addFilter(new JWTAuthorizationFilter(authenticationManager(), configProperties, jwtService));
 
 
     }

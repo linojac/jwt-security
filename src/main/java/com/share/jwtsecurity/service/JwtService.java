@@ -1,6 +1,6 @@
 package com.share.jwtsecurity.service;
 
-import com.share.jwtsecurity.config.SecurityConfig;
+import com.share.jwtsecurity.config.ConfigProperties;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -11,10 +11,10 @@ import java.util.Date;
 @Component
 public class JwtService {
 
-    SecurityConfig config;
+    ConfigProperties configProperties;
 
-    public JwtService(SecurityConfig config) {
-        this.config = config;
+    public JwtService(ConfigProperties configProperties) {
+        this.configProperties = configProperties;
     }
 
     public String createToken(String username, Date expirationDate) {
@@ -24,7 +24,7 @@ public class JwtService {
 
                 .setExpiration(expirationDate)
 
-                .signWith(SignatureAlgorithm.HS512, config.getJwtSecretKey())
+                .signWith(SignatureAlgorithm.HS512, configProperties.getJwtSecretKey())
 
                 .compact();
 
@@ -33,9 +33,9 @@ public class JwtService {
     public Claims getClaims(String token) {
         return Jwts.parser()
 
-                .setSigningKey(config.getJwtSecretKey())
+                .setSigningKey(configProperties.getJwtSecretKey())
 
-                .parseClaimsJws(token.replace(config.getJwtTokenPrefix(), ""))
+                .parseClaimsJws(token.replace(configProperties.getJwtTokenPrefix(), ""))
 
                 .getBody();
     }

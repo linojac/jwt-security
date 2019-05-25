@@ -13,8 +13,8 @@ import org.springframework.data.mongodb.core.MongoOperations;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
-public class AppConfig {
-    private static final Logger LOGGER = LoggerFactory.getLogger(AppConfig.class);
+public class ApplicationConfig {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ApplicationConfig.class);
 
     @Bean
     ObjectMapper objectMapper() {

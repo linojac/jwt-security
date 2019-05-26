@@ -18,12 +18,6 @@
         <java.version>1.8</java.version>
     </properties>
 
-    <distributionManagement>
-        <site>
-            <id>nexus</id>
-            <url>dav:http://localhost:8081/nexus/content/sites/site/</url>
-        </site>
-    </distributionManagement>
 
     <dependencies>
         <dependency>

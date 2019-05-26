@@ -1,6 +1,7 @@
 package com.share.jwtsecurity.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.share.jwtsecurity.annotation.InjectLogger;
 import com.share.jwtsecurity.config.ConfigProperties;
 import com.share.jwtsecurity.constant.ApplicationConstants;
 import com.share.jwtsecurity.exception.ApiError;
@@ -8,7 +9,6 @@ import com.share.jwtsecurity.exception.JwtSecurityException;
 import com.share.jwtsecurity.service.EncoderService;
 import com.share.jwtsecurity.service.JwtService;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,7 +29,8 @@ import java.util.StringTokenizer;
 
 public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(JWTAuthenticationFilter.class);
+    @InjectLogger
+    private static Logger LOGGER;
 
     private ConfigProperties configProperties;
 

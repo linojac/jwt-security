@@ -1,7 +1,7 @@
 package com.share.jwtsecurity.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.share.jwtsecurity.annotation.InjectLogger;
+import com.share.commonshare.annotation.InjectLogger;
 import com.share.jwtsecurity.config.ConfigProperties;
 import com.share.jwtsecurity.constant.ApplicationConstants;
 import com.share.jwtsecurity.exception.ApiError;

@@ -1,0 +1,44 @@
+version: '3.7'
+services:
+  jwt-security:
+    build:
+      context: .
+    image: security:1.1
+    env_file:
+      - env/dev.env
+    ports:
+      - "${PORT}:8080"
+    networks:
+      - backend
+      - frontend
+    deploy:
+      mode: replicated
+      replicas: 2
+    depends_on:
+      - "mongodb"
+
+  mongodb:
+    image: mongo
+    networks:
+      - backend
+    environment:
+      - MONGO_PORT=${MONGO_PORT}
+    ports:
+      - "${MONGO_PORT}:27017"
+    deploy:
+      mode: replicated
+      replicas: 1
+    volumes:
+      - mongodb-data:/data/db
+      - mongodb-config:/data/configdb
+    hostname: local-mongo
+
+volumes:
+  mongodb-data:
+  mongodb-config:
+
+networks:
+  frontend:
+    driver: overlay
+  backend:
+    driver: overlay

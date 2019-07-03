@@ -6,22 +6,22 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ConfigProperties {
 
-    @Value("${jwt.secret.key:SecretKeyToGenJwtTokens}")
+    @Value("${jwt.secret.key}")
     private transient String jwtSecretKey;
 
-    @Value("${jwt.expiration.time:864000000}")//10 days
+    @Value("${jwt.expiration.time}")//10 days
     private long jwtExpirationTime;
 
-    @Value("${session.time:1800000}")
+    @Value("${session.time}")
     private long sessionExpirationTime;
 
-    @Value("${jwt.token.prefix:Bearer }")
+    @Value("${jwt.token.prefix}")
     private String jwtTokenPrefix;
 
-    @Value("${jwt.header:authorization}")
+    @Value("${jwt.header}")
     private String jwtHeader;
 
-    @Value(("${sign.up.url:/users/sign-up}"))
+    @Value(("${sign.up.url}"))
     private String signUpUrl;
 
     public String getJwtSecretKey() {

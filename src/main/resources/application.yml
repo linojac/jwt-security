@@ -1,0 +1,27 @@
+jwt:
+  secret.key: SecretKeyToGenJwtTokens
+  expiration.time: 864000000
+  token.prefix: Bearer
+  header: authorization
+session.time: 1800000
+sign.up.url: /users/sign-up
+server.contextPath: security
+
+
+spring.profiles: local
+spring:
+  data:
+    mongodb:
+      host: localhost
+      port: 27017
+      database: test
+
+
+---
+spring.profiles: dev
+spring:
+  data:
+    mongodb:
+      host: 192.168.99.100
+      port: 27018
+      database: test
